@@ -11,19 +11,20 @@ using Rodkulman.MilkMafia.Models;
 namespace Rodkulman.MilkMafia.Controllers
 {
     [ApiController]
-    [Route("[controller]")]
+    [Route("api/v0/Categories")]
     public class CategoryController : ControllerBase
     {
         [HttpGet]
         public IEnumerable<Category> Get()
         {
+            int id = 0;
             using (var reader = new StreamReader("categories.csv"))
             {
                 string line;
 
                 while ((line = reader.ReadLine()) != null)
                 {
-                    yield return new Category() { Name = line };
+                    yield return new Category() { Id = id++, Name = line };
                 }
             }
         }
