@@ -24,7 +24,7 @@ namespace Rodkulman.MilkMafia.Controllers
 
                 while ((line = reader.ReadLine()) != null)
                 {
-                    yield return new Category() { Id = id++, Name = line };
+                    yield return new Category() { Id = id++, Name = line, ImageId = "placeholder" };
                 }
             }
         }
