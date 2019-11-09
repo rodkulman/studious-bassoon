@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 
 namespace Rodkulman.MilkMafia.Models
 {
@@ -7,5 +8,7 @@ namespace Rodkulman.MilkMafia.Models
         public int Id { get; set; }
         public string Name { get; set; }
         public string ImageId { get; set; } 
+
+        public ICollection<Product> Products { get; set; }
     }
 }
