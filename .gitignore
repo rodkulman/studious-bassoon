@@ -332,3 +332,4 @@ ASALocalRun/
 # Project Specific
 .vscode
 *.csv
+DB
