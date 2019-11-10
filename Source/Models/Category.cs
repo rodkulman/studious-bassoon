@@ -5,9 +5,11 @@ namespace Rodkulman.MilkMafia.Models
 {
     public class Category
     {
-        public int Id { get; set; }
-        public string Name { get; set; }
-        public string ImageId { get; set; } 
+        #region TableMapping
+            public int Id { get; set; }
+            public string Description { get; set; }
+            public string ImageId { get; set; } 
+        #endregion
 
         public ICollection<Product> Products { get; set; }
     }

@@ -17,15 +17,9 @@ namespace Rodkulman.MilkMafia.Controllers
         [HttpGet]
         public IEnumerable<Category> Get()
         {
-            int id = 0;
-            using (var reader = new StreamReader("categories.csv"))
+            using (var context = new MilkMafiaContext())
             {
-                string line;
-
-                while ((line = reader.ReadLine()) != null)
-                {
-                    yield return new Category() { Id = id++, Name = line, ImageId = "placeholder" };
-                }
+                return context.Categories;
             }
         }
     }
