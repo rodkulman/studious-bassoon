@@ -1,0 +1,50 @@
+https://dev.mysql.com/doc/mysql-apt-repo-quick-guide/en/
+
+https://dev.mysql.com/doc/refman/8.0/en/
+
+
+142.93.71.132
+
+C:\Users\Matheus_Storck\Documents\Matheus\LabMM\mysql-shell-8.0.18-windows-x86-64bit\bin
+root@DankKaiserHost:/etc# mysql -h localhost -u root -p direloDB
+Enter password:
+Welcome to the MySQL monitor.  Commands end with ; or \g.
+Your MySQL connection id is 16
+Server version: 8.0.18 MySQL Community Server - GPL
+Copyright (c) 2000, 2019, Oracle and/or its affiliates. All rights reserved.
+Oracle is a registered trademark of Oracle Corporation and/or its affiliates. Other names may be trademarks of their respective owners.
+Type 'help;' or '\h' for help. Type '\c' to clear the current input statement.
+
+mysql> select database();
++------------+
+| database() |
++------------+
+| direloDB   |
++------------+
+
+1 row in set (0.00 sec)
+
+mysql>
+mysql> show databases;
++--------------------+
+| Database           |
++--------------------+
+| direloDB           |
+| information_schema |
+| mysql              |
+| performance_schema |
+| sys                |
++--------------------+
+
+5 rows in set (0.00 sec)
+
+
+-- Mysql Installation steps:
+
+Download APT repository from https://dev.mysql.com/downloads/repo/apt/
+
+root@testVM:/tmp# uname -a
+Linux testVM 4.15.0-66-generic #75-Ubuntu SMP Tue Oct 1 05:24:09 UTC 2019 x86_64 x86_64 x86_64 GNU/Linux
+
+Since it is a Ubuntu OS, download mysql-apt-config_0.8.14-1_all.deb.
+
