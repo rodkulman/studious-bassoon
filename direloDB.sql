@@ -1,6 +1,3 @@
-mysql> use direloDB
-Database changed
-
 CREATE TABLE Users (
   Id int PRIMARY KEY AUTO_INCREMENT,
   CPF blob,
@@ -42,6 +39,6 @@ CREATE TABLE Paletization (
 
 ALTER TABLE Products ADD FOREIGN KEY (CategoryId) REFERENCES Categories (Id);
 
-ALTER TABLE Products ADD FOREIGN KEY (Id) REFERENCES ProductQuantity (ProductId);
+ALTER TABLE ProductQuantity ADD FOREIGN KEY (ProductId) REFERENCES Products (Id);
 
-ALTER TABLE Products ADD FOREIGN KEY (Id) REFERENCES Paletization (ProductId);
+ALTER TABLE Paletization ADD FOREIGN KEY (ProductId) REFERENCES Products (Id);

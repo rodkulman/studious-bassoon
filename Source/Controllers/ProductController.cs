@@ -5,6 +5,7 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Rodkulman.MilkMafia.Models;
 
@@ -19,7 +20,7 @@ namespace Rodkulman.MilkMafia.Controllers
         {
             using (var context = new MilkMafiaContext())
             {
-                return context.Products;
+                return context.Products.Include(x => x.Paletization).Include(x => x.Quantity).Include(x => x.Category).ToList();
             }
         }
 
@@ -28,7 +29,7 @@ namespace Rodkulman.MilkMafia.Controllers
         {
             using (var context = new MilkMafiaContext())
             {
-                return context.Products.Where(x => x.CategoryId == categoryId);
+                return context.Products.Where(x => x.CategoryId == categoryId).Include(x => x.Paletization).Include(x => x.Quantity).Include(x => x.Category).ToList();
             }
         }
     }

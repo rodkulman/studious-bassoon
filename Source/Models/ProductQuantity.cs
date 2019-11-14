@@ -1,3 +1,5 @@
+using System.Text.Json.Serialization;
+
 namespace Rodkulman.MilkMafia.Models
 {
     public class ProductQuantity
@@ -8,7 +10,7 @@ namespace Rodkulman.MilkMafia.Models
             public double Price { get; set; }
         #endregion        
 
-        #region Relations
+        #region Relations            
             public Product Product { get; set; }
         #endregion
     }

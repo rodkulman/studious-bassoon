@@ -15,7 +15,7 @@ namespace Rodkulman.MilkMafia.Models
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
-            using(var file = File.Open("DB/config.json", FileMode.Open))
+            using(var file = File.Open("DB/config.json", FileMode.Open, FileAccess.Read))
             using(var reader = new StreamReader(file, Encoding.UTF8))
             using(var jReader = new JsonTextReader(reader))
             {

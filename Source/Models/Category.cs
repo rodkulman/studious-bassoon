@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Text.Json.Serialization;
 
 namespace Rodkulman.MilkMafia.Models
 {
@@ -10,7 +11,7 @@ namespace Rodkulman.MilkMafia.Models
             public string Description { get; set; }
             public string ImageId { get; set; } 
         #endregion
-
+        
         public ICollection<Product> Products { get; set; }
     }
 }

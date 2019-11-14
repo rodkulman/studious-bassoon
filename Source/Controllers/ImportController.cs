@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Rodkulman.MilkMafia.Models;
 
@@ -14,8 +15,7 @@ namespace Rodkulman.MilkMafia.Controllers
     public class ImportController : ControllerBase
     {
         [HttpPost]
-        [Route("csv")]
-        public IActionResult UpdateProducts()
+        public async Task<IActionResult> UpdateProducts()
         {
             using var context = new MilkMafiaContext();
             using var reader = new StreamReader(Request.Body, Encoding.UTF8);
@@ -24,9 +24,9 @@ namespace Rodkulman.MilkMafia.Controllers
             var line = string.Empty;
             var brazilCulture = CultureInfo.GetCultureInfo("pt-br");
 
-            while ((line = reader.ReadLine()) != null)
+            while ((line = await reader.ReadLineAsync()) != null)
             {
-                var values = line.Split(';');
+                var values = line.Split(';').SkipLast(1).ToArray();
 
                 if (string.IsNullOrWhiteSpace(values[1])) { continue; }
 
@@ -37,24 +37,41 @@ namespace Rodkulman.MilkMafia.Controllers
 
                     if (currentCategory == null) 
                     {
-                        currentCategory = new Category() { Description = values[1] }; 
+                        currentCategory = new Category() { Description = values[1], Products = new List<Product>() }; 
                         context.Categories.Add(currentCategory);
                     }                    
                 }
-                else if (values.All(x => !string.IsNullOrWhiteSpace(x)))
+                else if (values[0] == values[2] && !string.IsNullOrEmpty(values[0]))
                 {
                     // this a product
                     var product = context.Products.FirstOrDefault(x => x.MaterialId == values[0]);
 
                     if (product == null) 
                     {
-                        product = new Product() { MaterialId = values[0], Category = currentCategory, CategoryId = currentCategory.Id }; 
+                        product = new Product() { MaterialId = values[0], Category = currentCategory }; 
                         currentCategory.Products.Add(product);
+                        context.Products.Add(product);
                     }
 
-                    product.Description = values[3];
-                    product.UnitPrice = double.Parse(values[4].Substring(4).Trim(), brazilCulture);
-                    product.STTax = double.Parse(values[6][0..^2], brazilCulture) / 100.0;
+                    product.Description = values[3];                    
+
+                    if (string.IsNullOrWhiteSpace(values[4]))
+                    {
+                        product.UnitPrice = -1;
+                    }
+                    else
+                    {
+                        product.UnitPrice = double.Parse(values[4].Substring(4).Trim(), brazilCulture);
+                    }
+
+                    if (!string.IsNullOrWhiteSpace(values[6]) && values[6].Contains("%"))
+                    {
+                        product.STTax = double.Parse(values[6][0..^2], brazilCulture) / 100.0;                        
+                    }
+                    else
+                    {
+                        product.STTax = -1;
+                    }                    
 
                     if (string.IsNullOrWhiteSpace(values[7]))
                     {
@@ -65,7 +82,14 @@ namespace Rodkulman.MilkMafia.Controllers
                         product.STPrice = double.Parse(values[7].Substring(4).Trim(), brazilCulture);
                     }
 
-                    product.ExpirationDays = int.Parse(values[13]);                    
+                    if (int.TryParse(values[13], out int expirationDays))
+                    {
+                        product.ExpirationDays = expirationDays;                        
+                    }
+                    else
+                    {
+                        product.ExpirationDays = -1;
+                    }
 
                     var match = Regex.Match(values[5].Trim(), @"^(?:acima de (?<qtty>\d+) cx )?R\$ (?<price>\d+,\d{1,2})$", RegexOptions.IgnoreCase);
 
@@ -73,17 +97,11 @@ namespace Rodkulman.MilkMafia.Controllers
                     {
                         if (product.Quantity == null)
                         {
-                            if (product.Id == 0) 
-                            {
-                                product.Quantity = new ProductQuantity() { Product = product };
-                            }
-                            else
-                            {
-                                product.Quantity = new ProductQuantity() { Product = product, ProductId = product.Id };
-                            }
+                            product.Quantity = new ProductQuantity() { Product = product };
+                            context.ProductQuantity.Add(product.Quantity);
                         }
 
-                        if (match.Groups.Keys.Contains("qtty"))
+                        if (match.Groups.Keys.Contains("qtty") && !string.IsNullOrEmpty(match.Groups["qtty"].Value))
                         {
                             product.Quantity.Quantity = int.Parse(match.Groups["qtty"].Value);
                         }
@@ -97,19 +115,36 @@ namespace Rodkulman.MilkMafia.Controllers
 
                     if (product.Paletization == null)
                     {
-                        if (product.Id == 0) 
-                        {
-                            product.Paletization = new Paletization() { Product = product };
-                        }
-                        else
-                        {
-                            product.Paletization = new Paletization() { Product = product, ProductId = product.Id };
-                        }
+                        product.Paletization = new Paletization() { Product = product };
+                        context.Paletization.Add(product.Paletization);
                     }
 
-                    product.Paletization.BoxQuantity = int.Parse(values[10]);
-                    product.Paletization.BoxLayerQuantity = int.Parse(values[12]);
-                    product.Paletization.LayerPalletQuantity = int.Parse(values[11]) / product.Paletization.BoxLayerQuantity;
+                    if (int.TryParse(values[10], out int boxQuantity))
+                    {
+                        product.Paletization.BoxQuantity = boxQuantity;
+                    }
+                    else
+                    {
+                        product.Paletization.BoxQuantity = -1;
+                    }
+
+                    if (int.TryParse(values[11], out int boxLayerQuantity))
+                    {
+                        product.Paletization.BoxLayerQuantity = boxLayerQuantity;
+                    }
+                    else
+                    {
+                        product.Paletization.BoxLayerQuantity = -1;
+                    }
+
+                    if (product.Paletization.BoxLayerQuantity != 0 && int.TryParse(values[12], out int layerPalletQuantity))
+                    {
+                        product.Paletization.LayerPalletQuantity = layerPalletQuantity;
+                    }
+                    else
+                    {
+                        product.Paletization.LayerPalletQuantity = -1;
+                    }
                 }
             }
 

@@ -26,7 +26,9 @@ namespace Rodkulman.MilkMafia.Controllers
             }
             else
             {
-                return NotFound();
+                var retVal = System.IO.File.ReadAllBytes($"images/placeholder.png");
+
+                return File(retVal, "image/png");
             }
         }
     }
