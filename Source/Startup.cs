@@ -40,6 +40,8 @@ namespace Rodkulman.MilkMafia
 
             app.UseRouting();
 
+            app.UseMiddleware<AuthenticationMiddleware>();
+
             app.UseAuthorization();
 
             app.UseEndpoints(endpoints =>
