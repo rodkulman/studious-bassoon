@@ -22,65 +22,13 @@ namespace Rodkulman.MilkMafia
 
         public async Task Invoke(HttpContext context)
         {
-            if (context.Request.Path.Value.EndsWith("api/v0/login"))
+            if (context.Request.Path.Value == "api/v0/login" || context.Request.Path.Value == "api/v0/refresh")
             {
-                using var reader = new StreamReader(context.Request.Body, Encoding.UTF8);
-
-                var encoded = await reader.ReadToEndAsync();
-                var bytes = Convert.FromBase64String(encoded);
-
-                using var db = new MilkMafiaContext();
-
-                if (db.Users.SingleOrDefault(x => x.CPF.SequenceEqual(bytes)) is User user)
-                {
-                    JArray tokenList;
-
-                    using (var file = File.Open("DB/tokens.json", FileMode.Open, FileAccess.Read))
-                    using (var textReader = new StreamReader(file, Encoding.UTF8))
-                    using (var jReader = new JsonTextReader(textReader))
-                    {
-                        tokenList = await JArray.LoadAsync(jReader);
-                    }
-
-                    var token = new JObject(
-                        new JProperty("token", Guid.NewGuid().ToString()),
-                        new JProperty("readAccess", user.ReadAccess),
-                        new JProperty("writeAccess", user.WriteAccess),
-                        new JProperty("expire", DateTime.Now.AddMinutes(30))
-                    );
-
-                    tokenList.Add(token);
-
-                    using (var file = File.Open("DB/tokens.json", FileMode.Create, FileAccess.Write))
-                    using (var textWriter = new StreamWriter(file, Encoding.UTF8))
-                    using (var jWriter = new JsonTextWriter(textWriter))
-                    {
-                        await tokenList.WriteToAsync(jWriter);
-                    }
-
-                    context.Response.StatusCode = 200;
-                    context.Response.ContentType = "application/json";
-
-                    await context.Response.WriteAsync(token.ToString(), Encoding.UTF8);
-
-                    return;
-                }
-                else
-                {
-                    context.Response.StatusCode = 401;
-                    return;
-                }
+                await next(context);
             }
             else if (context.Request.Headers.TryGetValue("Authorization", out StringValues authHeader) && authHeader[0].StartsWith("Bearer"))
             {
-                JArray tokenList;
-
-                using (var file = File.Open("DB/tokens.json", FileMode.OpenOrCreate, FileAccess.Read))
-                using (var textReader = new StreamReader(file, Encoding.UTF8))
-                using (var jReader = new JsonTextReader(textReader))
-                {
-                    tokenList = await JArray.LoadAsync(jReader);
-                }
+                var tokenList = await GetTokenList();
 
                 var token = authHeader[0].Substring(7);
 
@@ -98,33 +46,35 @@ namespace Rodkulman.MilkMafia
                         );
 
                         await context.Response.WriteAsync(response.ToString(), Encoding.UTF8);
-
-                        return;
                     }
-                    else if (!tokenData.Value<bool>("writeAccess") && context.Request.Method != "GET")
+                    else if (!tokenData.Value<bool>("readAccess") || (!tokenData.Value<bool>("writeAccess") && context.Request.Method != "GET"))
                     {
                         context.Response.StatusCode = 401;
-                        return;
                     }
-                    else if (!tokenData.Value<bool>("readAccess"))
+                    else
                     {
-                        context.Response.StatusCode = 401;
-                        return;
+                        await next(context);
                     }
                 }
                 else
                 {
                     context.Response.StatusCode = 401;
-                    return;
                 }
             }
             else
             {
                 context.Response.StatusCode = 401;
-                return;
-            }
+            }            
+        }
 
-            await next(context);
+        private static async Task<JArray> GetTokenList()
+        {
+            using (var file = File.Open("DB/tokens.json", FileMode.Open, FileAccess.Read))
+            using (var textReader = new StreamReader(file, Encoding.UTF8))
+            using (var jReader = new JsonTextReader(textReader))
+            {
+                return await JArray.LoadAsync(jReader);
+            }
         }
     }
 }
