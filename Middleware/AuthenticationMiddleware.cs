@@ -22,7 +22,7 @@ namespace Rodkulman.MilkMafia
 
         public async Task Invoke(HttpContext context)
         {
-            if (context.Request.Path.Value == "api/v0/login" || context.Request.Path.Value == "api/v0/refresh")
+            if (context.Request.Path.Value == "/api/v0/login" || context.Request.Path.Value == "/api/v0/refresh")
             {
                 await next(context);
             }

@@ -65,7 +65,7 @@ namespace Rodkulman.MilkMafia.Controllers
 
             if (tokenList.SingleOrDefault(x => x.Value<string>("refresh") == refreshToken) is JToken tokenData)
             {
-                if (tokenData.Value<DateTime>("expireRefresh") > DateTime.Now)
+                if (DateTime.Now >= tokenData.Value<DateTime>("expireRefresh"))
                 {
                     tokenData["token"] = Guid.NewGuid();
                     tokenData["refresh"] = Guid.NewGuid();
