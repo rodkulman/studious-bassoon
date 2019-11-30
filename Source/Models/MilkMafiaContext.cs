@@ -57,7 +57,7 @@ namespace Rodkulman.MilkMafia.Models
             {
                 entity.HasKey(x => x.Id);
                 entity.HasOne(x => x.Category).WithMany(x => x.Products);
-                entity.HasOne(x => x.Quantity).WithOne(x => x.Product);
+                entity.HasMany(x => x.Quantity).WithOne(x => x.Product);
                 entity.HasOne(x => x.Paletization).WithOne(x => x.Product);
             });
         }

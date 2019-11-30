@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 
 namespace Rodkulman.MilkMafia.Models
 {
@@ -11,15 +12,14 @@ namespace Rodkulman.MilkMafia.Models
         public int CategoryId { get; set; }
         public int ExpirationDays { get; set; }
         public double UnitPrice { get; set; }
-        public double STTax { get; set; }
-        public double STPrice { get; set; }
+        public double STTax { get; set; }        
         public string ImageId { get; set; } 
 
         #endregion
 
         #region Relations
             public Category Category { get; set; }
-            public ProductQuantity Quantity { get; set; }
+            public ICollection<ProductQuantity> Quantity { get; set; }
             public Paletization Paletization { get; set; }
         #endregion
     }

@@ -19,7 +19,6 @@ CREATE TABLE Products (
   ExpirationDays int,
   UnitPrice float,
   STTax float,
-  STPrice float,
   ImageId varchar(255)
 );
 

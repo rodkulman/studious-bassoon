@@ -35,25 +35,25 @@ namespace Rodkulman.MilkMafia.Controllers
                     // this is the start of another category block
                     currentCategory = context.Categories.FirstOrDefault(x => x.Description == values[1]);
 
-                    if (currentCategory == null) 
+                    if (currentCategory == null)
                     {
-                        currentCategory = new Category() { Description = values[1], Products = new List<Product>() }; 
+                        currentCategory = new Category() { Description = values[1], Products = new List<Product>() };
                         context.Categories.Add(currentCategory);
-                    }                    
+                    }
                 }
                 else if (values[0] == values[2] && !string.IsNullOrEmpty(values[0]))
                 {
                     // this a product
                     var product = context.Products.FirstOrDefault(x => x.MaterialId == values[0]);
 
-                    if (product == null) 
+                    if (product == null)
                     {
-                        product = new Product() { MaterialId = values[0], Category = currentCategory }; 
+                        product = new Product() { MaterialId = values[0], Category = currentCategory };
                         currentCategory.Products.Add(product);
                         context.Products.Add(product);
                     }
 
-                    product.Description = values[3];                    
+                    product.Description = values[3];
 
                     if (string.IsNullOrWhiteSpace(values[4]))
                     {
@@ -66,25 +66,17 @@ namespace Rodkulman.MilkMafia.Controllers
 
                     if (!string.IsNullOrWhiteSpace(values[6]) && values[6].Contains("%"))
                     {
-                        product.STTax = double.Parse(values[6][0..^2], brazilCulture) / 100.0;                        
+                        product.STTax = double.Parse(values[6][0..^2], brazilCulture) / 100.0;
                     }
                     else
                     {
                         product.STTax = -1;
-                    }                    
+                    }
 
-                    if (string.IsNullOrWhiteSpace(values[7]))
-                    {
-                        product.STPrice = -1;
-                    }
-                    else
-                    {
-                        product.STPrice = double.Parse(values[7].Substring(4).Trim(), brazilCulture);
-                    }
 
                     if (int.TryParse(values[13], out int expirationDays))
                     {
-                        product.ExpirationDays = expirationDays;                        
+                        product.ExpirationDays = expirationDays;
                     }
                     else
                     {
@@ -95,22 +87,24 @@ namespace Rodkulman.MilkMafia.Controllers
 
                     if (match.Success)
                     {
-                        if (product.Quantity == null)
+                        if (!(product.Quantity?.Any() ?? false))
                         {
-                            product.Quantity = new ProductQuantity() { Product = product };
-                            context.ProductQuantity.Add(product.Quantity);
+                            if (product.Quantity == null) { product.Quantity = new List<ProductQuantity>(); }
+
+                            product.Quantity.Add(new ProductQuantity() { Product = product });
+                            context.ProductQuantity.Add(product.Quantity.Last());
                         }
 
                         if (match.Groups.Keys.Contains("qtty") && !string.IsNullOrEmpty(match.Groups["qtty"].Value))
                         {
-                            product.Quantity.Quantity = int.Parse(match.Groups["qtty"].Value);
+                            product.Quantity.Last().Quantity = int.Parse(match.Groups["qtty"].Value);
                         }
                         else
                         {
-                            product.Quantity.Quantity = 10;
+                            product.Quantity.Last().Quantity = 10;
                         }
 
-                        product.Quantity.Price = double.Parse(match.Groups["price"].Value, brazilCulture);
+                        product.Quantity.Last().Price = double.Parse(match.Groups["price"].Value, brazilCulture);
                     }
 
                     if (product.Paletization == null)
@@ -128,7 +122,7 @@ namespace Rodkulman.MilkMafia.Controllers
                         product.Paletization.BoxQuantity = -1;
                     }
 
-                    if (int.TryParse(values[11], out int boxLayerQuantity))
+                    if (int.TryParse(values[12], out int boxLayerQuantity))
                     {
                         product.Paletization.BoxLayerQuantity = boxLayerQuantity;
                     }
@@ -137,9 +131,9 @@ namespace Rodkulman.MilkMafia.Controllers
                         product.Paletization.BoxLayerQuantity = -1;
                     }
 
-                    if (product.Paletization.BoxLayerQuantity != 0 && int.TryParse(values[12], out int layerPalletQuantity))
+                    if (product.Paletization.BoxLayerQuantity > 0 && int.TryParse(values[11], out int layerPalletQuantity))
                     {
-                        product.Paletization.LayerPalletQuantity = layerPalletQuantity;
+                        product.Paletization.LayerPalletQuantity = layerPalletQuantity / product.Paletization.BoxLayerQuantity;
                     }
                     else
                     {
