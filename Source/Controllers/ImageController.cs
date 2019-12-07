@@ -15,20 +15,59 @@ namespace Rodkulman.MilkMafia.Controllers
     public class ImageController : ControllerBase
     {
         [HttpGet]
-        [Route("{imageId}")]
-        public IActionResult Get(string imageId)
+        [Route("product/{imageId}")]
+        public IActionResult GetProductImage(int imageId)
         {
-            if (System.IO.File.Exists($"images/{imageId}.png"))
+            using var context = new MilkMafiaContext();
+
+            var image = context.ProductImages.SingleOrDefault(x => x.Id == imageId);
+
+            if (image != null && System.IO.File.Exists($"images/{image.ImagePath}"))
             {
-                var retVal = System.IO.File.ReadAllBytes($"images/{imageId}.png");
+                var retVal = System.IO.File.ReadAllBytes($"images/{image.ImagePath}");
 
                 return File(retVal, "image/png");
             }
             else
             {
-                var retVal = System.IO.File.ReadAllBytes($"images/placeholder.png");
+                return NotFound();
+            }
+        }
 
-                return File(retVal, "image/png");
+        [HttpGet]
+        [Route("category/{categoryId}")]
+        public IActionResult GetCategoryImage(int categoryId, [FromQuery]string size)
+        {
+            if (size != "large" && size != "small")
+            {
+                return BadRequest($"{nameof(size)} must be either 'large' or 'small'");
+            }
+
+            using var context = new MilkMafiaContext();
+
+            var category = context.Categories.SingleOrDefault(x => x.Id == categoryId);
+
+            if (category != null)
+            {
+                string imagePath;
+
+                if (size == "large") { imagePath = category.LargeImagePath; }
+                else { imagePath = category.SmallImagePath; }
+
+                if (System.IO.File.Exists("images/{imagePath}"))
+                {
+                    var retVal = System.IO.File.ReadAllBytes($"images/{imagePath}");
+
+                    return File(retVal, "image/png");
+                }
+                else
+                {
+                    return StatusCode(500, "File does not exist");
+                }
+            }
+            else
+            {
+                return NotFound();
             }
         }
     }

@@ -10,7 +10,8 @@ namespace Rodkulman.MilkMafia.Models
     {
         public DbSet<Category> Categories { get; set; }
         public DbSet<Product> Products { get; set; }
-        public DbSet<ProductQuantity> ProductQuantity { get; set; }
+        public DbSet<ProductPrice> ProductPrices { get; set; }
+        public DbSet<ProductImage> ProductImages { get; set; }
         public DbSet<Paletization> Paletization { get; set; }
 
         public DbSet<User> Users { get; set; }
@@ -48,16 +49,23 @@ namespace Rodkulman.MilkMafia.Models
                 entity.HasKey(x => x.ProductId);
             });
 
-            modelBuilder.Entity<ProductQuantity>(entity =>
+            modelBuilder.Entity<ProductImage>(entity =>
             {
-                entity.HasKey(x => new { x.ProductId, x.Quantity });
+                entity.HasKey(x => x.Id);
+            });
+
+            modelBuilder.Entity<ProductPrice>(entity =>
+            {
+                entity.HasKey(x => x.Id);
+                entity.Property(x => x.IsPrimary).HasColumnType("bit");
             });
 
             modelBuilder.Entity<Product>(entity =>
             {
                 entity.HasKey(x => x.Id);
                 entity.HasOne(x => x.Category).WithMany(x => x.Products);
-                entity.HasMany(x => x.Quantity).WithOne(x => x.Product);
+                entity.HasMany(x => x.Prices).WithOne(x => x.Product);
+                entity.HasMany(x => x.Images).WithOne(x => x.Product);
                 entity.HasOne(x => x.Paletization).WithOne(x => x.Product);
             });
         }

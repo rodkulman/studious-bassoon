@@ -9,7 +9,10 @@ namespace Rodkulman.MilkMafia.Models
         #region TableMapping
             public int Id { get; set; }
             public string Description { get; set; }
-            public string ImageId { get; set; } 
+            [JsonIgnore]
+            public string LargeImagePath { get; set; } 
+            [JsonIgnore]
+            public string SmallImagePath { get; set; } 
         #endregion
         
         public ICollection<Product> Products { get; set; }

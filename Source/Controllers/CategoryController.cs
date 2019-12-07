@@ -38,7 +38,9 @@ namespace Rodkulman.MilkMafia.Controllers
 
             var retval = context.Categories
                 .Include(x => x.Products)
-                    .ThenInclude(x => x.Quantity)
+                    .ThenInclude(x => x.Prices)
+                .Include(x => x.Products)
+                    .ThenInclude(x => x.Images)
                 .Include(x => x.Products)
                     .ThenInclude(x => x.Paletization)
                 .ToList();

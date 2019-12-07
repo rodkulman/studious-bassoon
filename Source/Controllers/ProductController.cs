@@ -20,7 +20,7 @@ namespace Rodkulman.MilkMafia.Controllers
         {
             using (var context = new MilkMafiaContext())
             {
-                return context.Products.Include(x => x.Paletization).Include(x => x.Quantity).Include(x => x.Category).ToList();
+                return context.Products.Include(x => x.Paletization).Include(x => x.Prices).Include(x => x.Category).ToList();
             }
         }
 
@@ -29,7 +29,7 @@ namespace Rodkulman.MilkMafia.Controllers
         {
             using (var context = new MilkMafiaContext())
             {
-                return context.Products.Where(x => x.CategoryId == categoryId).Include(x => x.Paletization).Include(x => x.Quantity).Include(x => x.Category).ToList();
+                return context.Products.Where(x => x.CategoryId == categoryId).Include(x => x.Paletization).Include(x => x.Prices).Include(x => x.Category).ToList();
             }
         }
     }

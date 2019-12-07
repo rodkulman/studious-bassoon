@@ -55,13 +55,17 @@ namespace Rodkulman.MilkMafia.Controllers
 
                     product.Description = values[3];
 
-                    if (string.IsNullOrWhiteSpace(values[4]))
+                    if (!string.IsNullOrWhiteSpace(values[4]))
                     {
-                        product.UnitPrice = -1;
-                    }
-                    else
-                    {
-                        product.UnitPrice = double.Parse(values[4].Substring(4).Trim(), brazilCulture);
+                        if (product.Prices == null)
+                        {
+                            product.Prices = new List<ProductPrice>();
+                        }
+
+                        var price = new ProductPrice() { Product = product, ProductId = product.Id, Price = double.Parse(values[4].Substring(4).Trim(), brazilCulture), Description = "Unitário" };
+
+                        product.Prices.Add(price);
+                        context.ProductPrices.Add(price);
                     }
 
                     if (!string.IsNullOrWhiteSpace(values[6]) && values[6].Contains("%"))
@@ -87,24 +91,24 @@ namespace Rodkulman.MilkMafia.Controllers
 
                     if (match.Success)
                     {
-                        if (!(product.Quantity?.Any() ?? false))
+                        if (product.Prices == null)
                         {
-                            if (product.Quantity == null) { product.Quantity = new List<ProductQuantity>(); }
-
-                            product.Quantity.Add(new ProductQuantity() { Product = product });
-                            context.ProductQuantity.Add(product.Quantity.Last());
+                            product.Prices = new List<ProductPrice>();
                         }
+
+                        var price = new ProductPrice() { Product = product, ProductId = product.Id, Price = double.Parse(match.Groups["price"].Value, brazilCulture) };
 
                         if (match.Groups.Keys.Contains("qtty") && !string.IsNullOrEmpty(match.Groups["qtty"].Value))
                         {
-                            product.Quantity.Last().Quantity = int.Parse(match.Groups["qtty"].Value);
+                            price.Description = $"Acima de {match.Groups["qtty"].Value} caixas";
                         }
                         else
                         {
-                            product.Quantity.Last().Quantity = 10;
+                            price.Description = $"Acima de 10 caixas";
                         }
 
-                        product.Quantity.Last().Price = double.Parse(match.Groups["price"].Value, brazilCulture);
+                        product.Prices.Add(price);
+                        context.ProductPrices.Add(price);                        
                     }
 
                     if (product.Paletization == null)

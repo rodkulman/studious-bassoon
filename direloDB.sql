@@ -2,13 +2,15 @@ CREATE TABLE Users (
   Id int PRIMARY KEY AUTO_INCREMENT,
   CPF blob,
   ReadAccess tinyint(1),
-  WriteAccess tinyint(1)
+  WriteAccess tinyint(1),
+  Name varchar(255)
 );
 
 CREATE TABLE Categories (
   Id int PRIMARY KEY AUTO_INCREMENT,
   Description varchar(255),
-  ImageId varchar(255)
+  LargeImagePath varchar(255),
+  SmallImagePath varchar(255)
 );
 
 CREATE TABLE Products (
@@ -17,16 +19,22 @@ CREATE TABLE Products (
   Description varchar(255),  
   CategoryId int,
   ExpirationDays int,
-  UnitPrice float,
   STTax float,
-  ImageId varchar(255)
+  ImageId int NULL
 );
 
-CREATE TABLE ProductQuantity (
-  ProductId int,
-  Quantity int,
+CREATE TABLE ProductPrices (
+  Id int PRIMARY KEY AUTO_INCREMENT,
+  ProductId int,  
   Price float,
-  PRIMARY KEY (ProductId, Quantity)
+  Description varchar(255),
+  IsPrimary tinyint(1)
+);
+
+CREATE TABLE ProductImages (
+  Id int PRIMARY KEY AUTO_INCREMENT,
+  ProductId int,
+  ImagePath varchar(255)
 );
 
 CREATE TABLE Paletization (
@@ -38,6 +46,10 @@ CREATE TABLE Paletization (
 
 ALTER TABLE Products ADD FOREIGN KEY (CategoryId) REFERENCES Categories (Id);
 
-ALTER TABLE ProductQuantity ADD FOREIGN KEY (ProductId) REFERENCES Products (Id);
+ALTER TABLE ProductPrices ADD FOREIGN KEY (ProductId) REFERENCES Products (Id);
+
+ALTER TABLE ProductImages ADD FOREIGN KEY (ProductId) REFERENCES Products (Id);
+
+ALTER TABLE Products ADD FOREIGN KEY (ImageId) REFERENCES ProductImages (Id);
 
 ALTER TABLE Paletization ADD FOREIGN KEY (ProductId) REFERENCES Products (Id);
