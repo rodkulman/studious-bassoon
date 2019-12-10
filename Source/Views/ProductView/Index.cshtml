@@ -1,0 +1,36 @@
+@{
+    ViewData["Title"] = "Produtos";
+}
+<div class="table-responsive">
+    <table class="table table-hover table-bordered">
+        <thead class="thead-dark">
+            <tr>
+                <th>Material</th>
+                <th>Nome</th>
+                <th>Expira Em</th>
+                <th>ST</th>
+            </tr>            
+        </thead>
+        <tbody>
+            @if (Model != null && Model.Count > 0)
+            {
+                foreach (var category in Model)
+                {
+                    <tr class="table-info">
+                        <td colspan="4">@(category.Description)</td>
+                    </tr>
+                    
+                    foreach (var product in category.Products)
+                    {
+                        <tr>
+                            <td>@(product.MaterialId)</td>
+                            <td>@(product.Description)</td>
+                            <td>@(product.ExpirationDays) dias</td>
+                            <td>@(product.STTax.ToString("P2"))</td>
+                        </tr>
+                    }
+                }
+            }
+        </tbody>
+    </table>
+</div>

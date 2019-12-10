@@ -1,0 +1,25 @@
+@{
+    ViewData["Title"] = "Categorias";
+}
+<div class="table-responsive">
+    <table class="table table-hover table-bordered">
+        <thead class="thead-dark">
+            <tr>
+                <th>#</th>
+                <th>Nome</th>
+            </tr>            
+        </thead>
+        <tbody>
+            @if (Model != null && Model.Count > 0)
+            {
+                for (var i = 0; i < Model.Count; i++)
+                {
+                    <tr>
+                        <th scope="row">@i</th>
+                        <td>@(Model[i].Description)</td>
+                    </tr>
+                }
+            }
+        </tbody>
+    </table>
+</div>
