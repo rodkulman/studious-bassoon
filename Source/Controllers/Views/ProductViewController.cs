@@ -14,11 +14,13 @@ namespace Rodkulman.MilkMafia.Controllers
     {
         public IActionResult Index()
         {
-            using var context = new MilkMafiaContext();            
+            using var context = new MilkMafiaContext();
 
             var categories = context.Categories
                 .Include(x => x.Products)
                     .ThenInclude(x => x.Paletization)
+                .Include(x => x.Products)
+                    .ThenInclude(x => x.Prices)
                 .OrderBy(x => x.Description)
                 .ToList();
 
@@ -28,6 +30,31 @@ namespace Rodkulman.MilkMafia.Controllers
             }
 
             return View(categories);
+        }
+
+        [HttpGet]
+        public IActionResult Product(int id)
+        {
+            using var context = new MilkMafiaContext();
+
+            var product = context.Products.FirstOrDefault(x => x.Id == id);
+
+            return PartialView(product ?? new Product());
+        }
+
+        [HttpPost]
+        public IActionResult Product(Product model)
+        {
+            if (ModelState.IsValid)
+            {
+                using (var context = new MilkMafiaContext())
+                {
+                    context.Products.Add(model);
+                    context.SaveChanges();
+                }
+            }
+
+            return PartialView(model);
         }
     }
 }
