@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Rodkulman.MilkMafia.Models;
@@ -37,19 +38,21 @@ namespace Rodkulman.MilkMafia.Controllers
         {
             using var context = new MilkMafiaContext();
 
-            var product = context.Products.FirstOrDefault(x => x.Id == id);
+            var product = context.Products.Include(x => x.Paletization).Include(x => x.Prices).FirstOrDefault(x => x.Id == id);
 
-            return PartialView(product ?? new Product());
+            var view = new ProductViewModel(product);
+            view.AllCategories = context.Categories.Select(x => new SelectListItem() { Value = x.Id.ToString(), Text = x.Description}).ToList();
+
+            return PartialView(view);
         }
 
         [HttpPost]
-        public IActionResult Product(Product model)
+        public IActionResult EditProduct(ProductViewModel model)
         {
             if (ModelState.IsValid)
             {
                 using (var context = new MilkMafiaContext())
                 {
-                    context.Products.Add(model);
                     context.SaveChanges();
                 }
             }

@@ -1,4 +1,5 @@
-@model Product
+@model ProductViewModel
+
 <div class="modal fade" tabindex="-1" role="dialog" id="edit-product" aria-hidden="true">
     <div class="modal-dialog modal-xl" role="document">
         <div class="modal-content">
@@ -9,41 +10,74 @@
                 </button>
             </div>
             <div class="modal-body">
-                <form asp-controller="ProductView" asp-action="Product" method="post">
+                <form id="productForm" asp-controller="ProductView" asp-action="EditProduct" method="post">                    
+                    <div class="form-group">
+                        <label asp-for="Description"></label>
+                        <input asp-for="Description" class="form-control" />
+                    </div>
                     <div class="form-row">
-                        <div class="form-group">
-                            <label asp-for="Description"></label>
-                            <input asp-for="Description" class="form-control" />
+                        <div class="form-group col">
+                            <label asp-for="MaterialId"></label>
+                            <input asp-for="MaterialId" class="form-control" />
+                        </div>
+                        <div class="form-group col">
+                            <label asp-for="CategoryId"></label>
+                            <select asp-for="CategoryId" asp-items="Model.AllCategories" class="form-control"></select>
+                        </div>                        
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group col">
+                            <label asp-for="ExpirationDays"></label>
+                            <div class="input-group mb-3">  
+                                <input type="number" asp-for="ExpirationDays" class="form-control" />
+                                <div class="input-group-append">
+                                    <span class="input-group-text">Dias</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group col">
+                            <label asp-for="STTax"></label>
+                            <div class="input-group mb-3">  
+                                <input asp-for="STTax" class="form-control" />
+                                <div class="input-group-append">
+                                    <span class="input-group-text">%</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group col">
+                            <label asp-for="BoxQuantity"></label>
+                            <input type="number" asp-for="BoxQuantity" class="form-control" />
+                        </div>
+                        <div class="form-group col">
+                            <label asp-for="BoxLayerQuantity"></label>
+                            <input type="number" asp-for="BoxLayerQuantity" class="form-control" />
+                        </div>
+                        <div class="form-group col">
+                            <label asp-for="LayerPalletQuantity"></label>
+                            <input type="number" asp-for="LayerPalletQuantity" class="form-control" />
                         </div>
                     </div>
                     <div class="form-group">
-                        <label asp-for="MaterialId"></label>
-                        <input asp-for="MaterialId" class="form-control" />
+                        <div class="form-row align-items-end">
+                            <div class="col align-self-center">
+                                <label asp-for="Prices"></label>
+                            </div>
+                            <div class="col col-md-auto align-self-end">
+                                <button class="btn btn-outline-success btn-sm">+</button>
+                            </div>                            
+                        </div>
+                        <hr style="margin-top: 5px" />
+                        @Html.EditorFor(x => x.Prices)
                     </div>                    
-                    <div class="form-group">
-                        <label asp-for="ExpirationDays"></label>
-                        <div class="input-group mb-3">  
-                            <input type="number" asp-for="ExpirationDays" class="form-control" />
-                            <div class="input-group-append">
-                                <span class="input-group-text">Dias</span>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <label asp-for="STTax"></label>
-                        <div class="input-group mb-3">  
-                            <input asp-for="STTax" class="form-control" />
-                            <div class="input-group-append">
-                                <span class="input-group-text">%</span>
-                            </div>
-                        </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Fechar</button>
+                        <button type="submit" class="btn btn-primary">Salvar</button>
                     </div>
                 </form>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-dismiss="modal">Fechar</button>
-                <button type="submit" class="btn btn-primary">Salvar</button>
-            </div>
+            </div>            
         </div>
     </div>
 </div>
