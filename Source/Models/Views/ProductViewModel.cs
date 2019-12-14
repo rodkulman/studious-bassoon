@@ -13,7 +13,7 @@ namespace Rodkulman.MilkMafia.Models
         {
             this.Prices = new List<ProductPriceViewModel>();
         }
-        
+
         public ProductViewModel(Product product)
         {
             if (product != null)
@@ -33,25 +33,38 @@ namespace Rodkulman.MilkMafia.Models
             {
                 this.Prices = new List<ProductPriceViewModel>();
             }
+
+            if (Prices.FirstOrDefault(x => x.IsPrimary && x.Price != -1)?.Price is double price)
+            {
+                PrimaryPrice = price * (1.0 + STTax / 100.0);
+            }
+            else
+            {
+                PrimaryPrice = null;
+            }
         }
 
         public int Id { get; set; }
         [Required]
-        [Display(Name="Material")]
+        [Display(Name = "Material")]
         public string MaterialId { get; set; }
         [Required]
-        [Display(Name="Nome")]
+        [Display(Name = "Nome")]
         public string Description { get; set; }
         [Required]
-        [Display(Name="Categoria")]
+        [Display(Name = "Categoria")]
         public int CategoryId { get; set; }
         [Required]
-        [Display(Name="Validade")]
+        [Display(Name = "Validade")]
         public int ExpirationDays { get; set; }
         [Required]
-        [Display(Name="ST")]
-        [DisplayFormat(DataFormatString="{0:N2}", ApplyFormatInEditMode = true)]
+        [Display(Name = "ST")]
+        [Range(0, 100)]
+        [DisplayFormat(DataFormatString = "{0:N2}", ApplyFormatInEditMode = true)]
         public double STTax { get; set; }
+        [Display(Name = "Preço")]
+        [DisplayFormat(DataFormatString = "{0:C2}", NullDisplayText = "-")]
+        public double? PrimaryPrice { get; private set; }
 
         [Display(Name = "Preços")]
         public ICollection<ProductPriceViewModel> Prices { get; set; }

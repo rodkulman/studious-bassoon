@@ -4,26 +4,26 @@
 @using (Html.BeginCollectionItem("Prices"))
 {
     <div class="form-row">
-        <div class="col col-md-auto"><button class="btn btn-sm btn-outline-danger">Remover</button></div>
-        <div class="form-group col">
-            <div class="input-group input-group-sm mb-3">
+        <div class="col col-md-auto mb-0"><button type="button" class="btn btn-sm btn-outline-danger" onclick="deleteRow(this)">Remover</button></div>
+        <input type="hidden" asp-for="Id" />
+        <div class="form-group col mb-0">
+            <div class="input-group input-group-sm">
                 <div class="input-group-append">
                     <label asp-for="Description" class="input-group-text"></label>
                 </div>
                 <input asp-for="Description" class="form-control" />                
             </div>
         </div>
-        <div class="form-group col col-sm-2">
-            <div class="input-group input-group-sm mb-3">
+        <div class="form-group col col-sm-2 mb-0">
+            <div class="input-group input-group-sm">
                 <div class="input-group-append">
                     <span class="input-group-text">R$</span>
                 </div>
                 <input asp-for="Price" class="form-control" />                
             </div>
         </div>
-        <div class="form-group col col-md-auto">
+        <div class="form-group col col-md-auto mb-0">
             <input asp-for="IsPrimary" type="radio" value="true" class="form-control" data-RadioGroup="IsPrimary" />
         </div>                                                                
     </div>
 }
-<script src="~/js/ProductView.js"></script>

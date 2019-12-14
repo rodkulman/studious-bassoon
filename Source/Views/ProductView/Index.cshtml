@@ -1,6 +1,8 @@
 @{
     ViewData["Title"] = "Produtos";
 }
+@model List<CategoryViewModel>
+
 <div class="table-responsive">
     <table class="table table-hover table-bordered">
         <thead class="thead-dark">
@@ -17,7 +19,7 @@
             </tr>            
         </thead>
         <tbody>
-            @if (Model != null && Model.Count > 0)
+            @if (Model.Count > 0)
             {
                 foreach (var category in Model)
                 {
@@ -27,28 +29,7 @@
                     
                     foreach (var product in category.Products)
                     {
-                        <tr>
-                            <td>
-                                <button type="button" class="btn btn-primary" data-toggle="ajax-modal" data-target="#edit-product" data-url="@Url.Action("Product", new { id = @product.Id } )">
-                                    Editar
-                                </button>
-                            </td>
-                            <td>@product.MaterialId</td>
-                            <td>@product.Description</td>                            
-                            <td>@(product.STTax.ToString("P2"))</td>
-                            @if (product.PrimaryPrice == null)
-                            {
-                                <td>-</td>
-                            }
-                            else
-                            {
-                                <td>@((product.PrimaryPrice.Price * (1 + product.STTax)).ToString("C2"))</td>
-                            }
-                            <td>@(product.Paletization.BoxQuantity)</td>
-                            <td>@(product.Paletization.BoxQuantity * product.Paletization.BoxLayerQuantity)</td>
-                            <td>@(product.Paletization.BoxQuantity * product.Paletization.BoxLayerQuantity * product.Paletization.LayerPalletQuantity)</td>
-                            <td>@(product.ExpirationDays) dias</td>
-                        </tr>
+                        @Html.Partial("ProductListItem", product)
                     }
                 }
             }

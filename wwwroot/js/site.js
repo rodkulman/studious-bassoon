@@ -27,3 +27,7 @@
         });
     });
 });
+
+function deleteRow(sender) {
+    $(sender).parents(".form-row:first").remove();
+}

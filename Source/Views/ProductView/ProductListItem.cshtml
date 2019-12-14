@@ -1,0 +1,20 @@
+@model ProductViewModel
+
+<tr>
+    <td>
+        <button type="button" class="btn btn-danger btn-sm" data-toggle="ajax-modal" data-target="#edit-product" data-url="@Url.Action("Product", new { id = @Model.Id } )">
+            Remover
+        </button>
+        <button type="button" class="btn btn-primary btn-sm" data-toggle="ajax-modal" data-target="#edit-product" data-url="@Url.Action("Product", new { id = @Model.Id } )">
+            Editar
+        </button>
+    </td>
+    <td>@Model.MaterialId</td>
+    <td>@Model.Description</td>                            
+    <td>@Html.DisplayFor(x => x.STTax)%</td>
+    <td>@Html.DisplayFor(x => x.PrimaryPrice)</td>
+    <td>@(Model.BoxQuantity)</td>
+    <td>@(Model.BoxQuantity * Model.BoxLayerQuantity)</td>
+    <td>@(Model.BoxQuantity * Model.BoxLayerQuantity * Model.LayerPalletQuantity)</td>
+    <td>@(Model.ExpirationDays) dias</td>
+</tr>

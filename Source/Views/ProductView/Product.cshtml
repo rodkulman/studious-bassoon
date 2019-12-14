@@ -11,6 +11,7 @@
             </div>
             <div class="modal-body">
                 <form id="productForm" asp-controller="ProductView" asp-action="EditProduct" method="post">                    
+                    <input type="hidden" asp-for="Id" />
                     <div class="form-group">
                         <label asp-for="Description"></label>
                         <input asp-for="Description" class="form-control" />
@@ -66,11 +67,13 @@
                                 <label asp-for="Prices"></label>
                             </div>
                             <div class="col col-md-auto align-self-end">
-                                <button class="btn btn-outline-success btn-sm">+</button>
+                                <button type="button" class="btn btn-outline-success btn-sm" id="addPrice">+</button>
                             </div>                            
                         </div>
                         <hr style="margin-top: 5px" />
-                        @Html.EditorFor(x => x.Prices)
+                        <div id="prices">
+                            @Html.EditorFor(x => x.Prices)
+                        </div>
                     </div>                    
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-dismiss="modal">Fechar</button>
@@ -81,3 +84,4 @@
         </div>
     </div>
 </div>
+<script src="~/js/ProductView.js"></script>
